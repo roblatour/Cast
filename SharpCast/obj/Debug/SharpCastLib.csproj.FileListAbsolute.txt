@@ -1,0 +1,10 @@
+E:\Documents\VBNet\cast\SharpCast\bin\Debug\SharpCastLib.dll
+E:\Documents\VBNet\cast\SharpCast\bin\Debug\SharpCastLib.pdb
+E:\Documents\VBNet\cast\SharpCast\bin\Debug\Google.ProtocolBuffers.dll
+E:\Documents\VBNet\cast\SharpCast\bin\Debug\Google.ProtocolBuffers.Serialization.dll
+E:\Documents\VBNet\cast\SharpCast\bin\Debug\Newtonsoft.Json.dll
+E:\Documents\VBNet\cast\SharpCast\bin\Debug\Newtonsoft.Json.xml
+E:\Documents\VBNet\cast\SharpCast\obj\Debug\SharpCastLib.csprojAssemblyReference.cache
+E:\Documents\VBNet\cast\SharpCast\obj\Debug\SharpCastLib.csproj.CopyComplete
+E:\Documents\VBNet\cast\SharpCast\obj\Debug\SharpCastLib.dll
+E:\Documents\VBNet\cast\SharpCast\obj\Debug\SharpCastLib.pdb
