@@ -173,7 +173,8 @@ Module modCommon
                         End Try
                     End Try
 
-                Case Is = ".mp4"
+
+                Case Is = ".mp4", ".m3u8"
 
                     ' convert to wav file
                     Using video = New MediaFoundationReader(Filename)

@@ -11,12 +11,17 @@ Imports System.Threading
 '
 Module modMain
 
+    Const ThisIsABetaRelease As Boolean = False
+
+    Const gCopyright As String = "Copyright Rob Latour, 2022"
+    Const gLicense As String = "MIT"
+    Friend Version As String = ""
+
     Friend gCommandLine_About As Boolean = False
 
     Friend gCommandLine_Background As Boolean = False
 
     Friend gCommandLine_Cancel As Boolean = False
-
 
     Friend gCommandLine_Dir As Boolean = False
     Friend gCommandLine_Dir_Value As String = String.Empty
@@ -66,6 +71,8 @@ Module modMain
     Friend StartingColour As ConsoleColor = Console.ForegroundColor
 
     Sub Main()
+
+        SetVersionNumber()
 
         Randomize()
 
@@ -159,7 +166,7 @@ Module modMain
         End If
 
         If gCommandLine_Pause Then
-            ExitUnderWay = True
+            ExitUnderway = True
             Console_WriteLineInColour(" ", ConsoleColor.White)
             Console_WriteLineInColour("Press enter to continue", ConsoleColor.White)
             Console.ReadLine()
@@ -1032,7 +1039,7 @@ Module modMain
 
                     Else
 
-                        If URL_String.ToLower.EndsWith(".mp3") OrElse URL_String.ToLower.EndsWith(".mp4") OrElse URL_String.ToLower.EndsWith(".wav") Then ' OrElse URL_String.ToLower.EndsWith(".flac") Then
+                        If URL_String.ToLower.EndsWith(".mp3") OrElse URL_String.ToLower.EndsWith(".m3u8") OrElse URL_String.ToLower.EndsWith(".mp4") OrElse URL_String.ToLower.EndsWith(".wav") Then
 
                             Dim ValidatedURI As Uri = Nothing
                             Dim GoodURL As Boolean = Uri.TryCreate(URL_String, UriKind.Absolute, ValidatedURI)
@@ -1052,7 +1059,7 @@ Module modMain
 
                         Else
 
-                            WarningInCommandLine &= "url value must end with: "".mp3"", "".mp4"", or "".wav""; switch will be ignored" & vbCrLf
+                            WarningInCommandLine &= "url value must end with: "".mp3"", "".m3u8"", "".mp4"", or "".wav""; switch will be ignored" & vbCrLf
                             gCommandLine_URL = False
 
                         End If
@@ -1488,7 +1495,7 @@ NextArgument:
                     Else
 
                         Dim entrylowercase = entry.ToLower
-                        If entrylowercase.EndsWith(".mp3") OrElse entrylowercase.EndsWith(".mp4") OrElse entrylowercase.EndsWith(".wav") Then
+                        If entrylowercase.EndsWith(".mp3") OrElse entrylowercase.EndsWith(".m3u8") OrElse entrylowercase.EndsWith(".mp4") OrElse entrylowercase.EndsWith(".wav") Then
                             ReturnValue(Index) = entry
                             Index += 1
 
@@ -1740,13 +1747,15 @@ NextArgument:
         If CurrentWidth < 100 Then Console.SetWindowSize(100, CurrentHeight)
 
         Console_WriteLineInColour(" ")
-        Console_WriteLineInColour("Cast v1.7 - About", ConsoleColor.White)
-        Console_WriteLineInColour("Copyright 2021, Rob Latour", ConsoleColor.White)
-        Console_WriteLineInColour("Cast is licensed under the following license:", ConsoleColor.Gray)
-        Console_WriteLineInColour("MIT)", ConsoleColor.Gray)
+        Console_WriteLineInColour("Cast " & Version & " - About", ConsoleColor.White)
+        Console_WriteLineInColour(" ")
+        Console_WriteLineInColour(gCopyright, ConsoleColor.White)
+        Console_WriteLineInColour(" ")
+        Console_WriteLineInColour("Cast is licensed under the " & gLicense & " license.", ConsoleColor.Gray)
         Console_WriteLineInColour("https://opensource.org/licenses/MIT", ConsoleColor.Gray)
+        Console_WriteLineInColour(" ")
         Console_WriteLineInColour("Cast open source: https://github.com/roblatour/cast", ConsoleColor.Gray)
-        Console_WriteLineInColour("Cast author web reference: https://www.rlatour.com/cast", ConsoleColor.Gray)
+        Console_WriteLineInColour("Cast author web reference: https://rlatour.com/cast", ConsoleColor.Gray)
         Console_WriteLineInColour(" ")
         Console_WriteLineInColour("Cast makes use of SharpCast, Copyright © Jeremy Pepiot, 2014", ConsoleColor.Cyan)
         Console_WriteLineInColour("SharpCast web reference: https://github.com/jpepiot/SharpCast", ConsoleColor.Gray)
@@ -1780,8 +1789,7 @@ NextArgument:
         Console_WriteLineInColour("Cast makes use of Google Protocol Buffers", ConsoleColor.Cyan)
         Console_WriteLineInColour("Google Protocol Buffers web reference: https://developers.google.com/protocol-buffers/", ConsoleColor.Gray)
         Console_WriteLineInColour(" ")
-        Console_WriteLineInColour("Cast is shareware.", ConsoleColor.White)
-        Console_WriteLineInColour("A donation through https://www.rlatour.com/cast/donate will be truly appreciated.", ConsoleColor.White)
+        Console_WriteLineInColour("A donation in support of Cast through https://rlatour.com/cast/donate will truly be appreciated.", ConsoleColor.White)
 
         Console.ForegroundColor = ConsoleColor.Gray
 
@@ -1798,7 +1806,7 @@ NextArgument:
         Dim StartingColour As ConsoleColor = Console.ForegroundColor
 
         Console_WriteLineInColour(" ")
-        Console_WriteLineInColour("Cast v1.7 - Help", ConsoleColor.White)
+        Console_WriteLineInColour("Cast " & Version & " - Help", ConsoleColor.White)
         Console_WriteLineInColour(" ")
         Console_WriteLineInColour("Switches:", ConsoleColor.White)
         Console_WriteLineInColour(" ")
@@ -1814,7 +1822,7 @@ NextArgument:
         Console_WriteLineInColour(" -debug       include diagnostic detail in the console displays")
         Console_WriteLineInColour(" ")
         Console_WriteLineInColour(" -dir         followed by the full directory name of a directory to cast")
-        Console_WriteLineInColour("              will cast all .mp3 .mp4 and .wav files in the directory and its sub-directories")
+        Console_WriteLineInColour("              will cast all .mp3 .m3u8 .mp4 and .wav files in the directory and its sub-directories")
         Console_WriteLineInColour("              files will be cast in alphabetical order within each directory")
         Console_WriteLineInColour("              unless the -random switch is also used")
         Console_WriteLineInColour("              directory name may be surronded by double quotes ("")")
@@ -1829,7 +1837,7 @@ NextArgument:
         Console_WriteLineInColour(" -file        followed by the full filename to cast")
         Console_WriteLineInColour("              filename may be surronded by double quotes ("")")
         Console_WriteLineInColour("              (required if the filename contains one or more hyphens)")
-        Console_WriteLineInColour("              supported file types are: .txt .mp3 .mp4 .wav")
+        Console_WriteLineInColour("              supported file types are: .txt .mp3 .m3u8 .mp4 .wav")
         Console_WriteLineInColour(" ")
         Console_WriteLineInColour(" -help        shows this help")
         Console_WriteLineInColour("              help is also shown if not switches are used")
@@ -1905,12 +1913,32 @@ NextArgument:
         Console_WriteLineInColour(" cast -cancel")
         Console_WriteLineInColour(" cast -website")
         Console_WriteLineInColour(" ")
-        Console_WriteLineInColour("Cast v1.7 Copyright © Rob Latour, 2019, License: MIT", ConsoleColor.White)
-        Console_WriteLineInColour("          Open source: https://github.com/roblatour/cast", ConsoleColor.White)
+        Console_WriteLineInColour("Cast " & Version & " " & gCopyright, ConsoleColor.White)
 
         Console.ForegroundColor = StartingColour
 
     End Sub
+
+    Private Sub SetVersionNumber()
+
+        Dim a As System.Reflection.Assembly = System.Reflection.Assembly.GetExecutingAssembly()
+        Dim appVersion As Version = a.GetName().Version
+        With appVersion
+            Version = "v" & .Major & "." & .Minor & "." & .Build & "." & .Revision
+        End With
+
+        For x = 1 To 3
+            If Version.EndsWith(".0") Then
+                Version = Version.Remove(Version.Length - 2)
+            End If
+        Next
+
+        If ThisIsABetaRelease Then
+            Version &= " (beta)"
+        End If
+
+    End Sub
+
 
     Private Sub OpenWebSite()
 

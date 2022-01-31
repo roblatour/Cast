@@ -18,7 +18,7 @@ Module modCasting
 
     Friend Async Function CastAFile(ByVal IndividualIPAddress As IPAddress, ByVal Filename As String) As Task
 
-        Dim FileIsAVideo As Boolean = (Path.GetExtension(Filename) = ".mp4")
+        Dim FileIsAVideo As Boolean = (Path.GetExtension(Filename) = ".mp4") OrElse (Path.GetExtension(Filename) = ".m3u8")
 
         Dim ThisDevice As Device = GetDevice(IndividualIPAddress)
 
@@ -167,7 +167,7 @@ Module modCasting
                     ThisDevice.Player.LaunchApp(DefaultMediaReceiver)
                 End If
 
-                If iURI.ToString.ToLower.EndsWith(".mp4") Then
+                If iURI.ToString.ToLower.EndsWith(".mp4") OrElse iURI.ToString.ToLower.EndsWith(".m3u8") Then
 
                     Dim MyMovieMediaMetadata As MovieMediaMetadata = New MovieMediaMetadata
                     MyMovieMediaMetadata.Title = iURI.ToString

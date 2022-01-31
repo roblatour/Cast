@@ -70,7 +70,7 @@ Module modPCSound
                                                                                   End Try
                                                                               End Try
 
-                                                                          Case Is = ".mp4"
+                                                                          Case Is = ".mp4", "m38u"
 
                                                                               ' convert to wav file
 
