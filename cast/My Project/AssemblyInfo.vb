@@ -12,7 +12,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("cast text and files to your Google device or PC speakers")>
 <Assembly: AssemblyCompany("Rob Latour")>
 <Assembly: AssemblyProduct("cast")>
-<Assembly: AssemblyCopyright("Copyright Rob Latour 2022")>
+<Assembly: AssemblyCopyright("Copyright 2023 Rob Latour")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")>
 
-<Assembly: AssemblyVersion("1.8.0.0")>
-<Assembly: AssemblyFileVersion("1.8.0.0")>
+<Assembly: AssemblyVersion("1.9.0.0")>
+<Assembly: AssemblyFileVersion("1.9.0.0")>

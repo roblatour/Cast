@@ -78,12 +78,12 @@ Module ModMyLocator
             Device = New Device(DeviceFriendlyName, DeviceName, DeviceIPAddress, PCVolume, PCIsMuted)
             LocatedDevices.Add(Device)
 
-            Dim TimeSpan3Seconds As TimeSpan = New TimeSpan(0, 0, 3)
+            Dim TimeSpan2Seconds As TimeSpan = New TimeSpan(0, 0, 2) ' changed from 3 to 2 in v1.9
 
             If DebugIsOn Then Console.WriteLine("Start inventory devices - first attempt")
-            If DebugIsOn Then Console.WriteLine("Wait time = " & TimeSpan3Seconds.ToString)
+            If DebugIsOn Then Console.WriteLine("Wait time = " & TimeSpan2Seconds.ToString)
 
-            Dim GoogleDevices As IReadOnlyList(Of IZeroconfHost) = Await ZeroconfResolver.ResolveAsync(Protocal, TimeSpan3Seconds, 5, 1000)
+            Dim GoogleDevices As IReadOnlyList(Of IZeroconfHost) = Await ZeroconfResolver.ResolveAsync(Protocal, TimeSpan2Seconds, 5, 1000)
 
             If DebugIsOn Then Console.WriteLine("Google device count = " & GoogleDevices.Count)
 

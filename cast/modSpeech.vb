@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Speech.AudioFormat
 Imports System.Speech.Synthesis
 
 Module modSpeech
@@ -106,16 +107,11 @@ Module modSpeech
     Friend Sub CreateASpeechFile(ByVal Text As String, ByVal Filename As String)
 
         Dim sp As New SpeechSynthesizer
-        Dim fs As New FileStream(Filename, FileMode.Create, FileAccess.Write)
-
         sp.SelectVoice(DesiredInstalledVoice.VoiceInfo.Name)
-        sp.SetOutputToWaveStream(fs)
+        sp.SetOutputToWaveFile(Filename, New SpeechAudioFormatInfo(48000, AudioBitsPerSample.Sixteen, AudioChannel.Mono)) 
         sp.Speak(Text)
         sp.SetOutputToDefaultAudioDevice()
 
-        fs.Close()
-
-        fs.Dispose()
         sp.Dispose()
 
     End Sub

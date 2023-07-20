@@ -13,7 +13,7 @@ Module modMain
 
     Const ThisIsABetaRelease As Boolean = False
 
-    Const gCopyright As String = "Copyright Rob Latour, 2022"
+    Const gCopyright As String = "Copyright (c) 2023, Rob Latour"
     Const gLicense As String = "MIT"
     Friend Version As String = ""
 
@@ -1903,7 +1903,7 @@ NextArgument:
         Console_WriteLineInColour(" cast -text This test is a whisper -volume 5")
         Console_WriteLineInColour(" cast -text This test is a shout -volume 100")
         Console_WriteLineInColour(" cast -text This is a test using an alternative port -port 9696")
-        Console_WriteLineInColour(" cast -text This is a test using a specific voice -voice Microsoft David Desktop")
+        Console_WriteLineInColour(" cast -text This is a test using a specific voice -voice Microsoft Zira Desktop")
         Console_WriteLineInColour(" cast -file C:\Users\Rob Latour\Music\Eagles\Hotel California.mp3")
         Console_WriteLineInColour(" cast -file C:\Users\Rob Latour\Music\Eagles\Hotel California.mp3 -background")
         Console_WriteLineInColour(" cast -dir C:\Users\Rob Latour\Music\Eagles -random")

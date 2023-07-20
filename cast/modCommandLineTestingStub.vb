@@ -24,6 +24,7 @@
         'Return "cast robspc -inventory -pause"
         'Return "-device ""Rob's office speaker"""
         'Return "-device ""Rob's office speaker""  -text the ball is red -pause"
+        'Return "-ip 192.168.200.132 -voice Microsoft Zira Desktop -text the ball is red -pause"
         'Return "-text the ball is blue -pause"
         'Return "-device ""Rob's office speaker"" -volume 20 -text the ball is red -pause"
         'Return "-device ""Rob's office speaker""  ""Basement Speaker"" -file c:/temp/grace.mp3 -pause"
