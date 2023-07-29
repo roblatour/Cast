@@ -19,7 +19,7 @@
         ' Return "-ip n.n.n.27 -volume 30 -file ""c:\temp\grace test.mp3"" -background"
         'Return "-ip n.n.n.27 -volume 10 -file ""c:\temp\grace.mp3"" -pause"
 
-        'Return "-inventory -pause"
+        Return "-inventory -pause"
 
         'Return "cast robspc -inventory -pause"
         'Return "-device ""Rob's office speaker"""
@@ -124,8 +124,17 @@
         'Return "-url http://www.callclerk.com -pause"
 
         'Return "-pause"
-        Return "-inventory -pause"
+        'Return "-inventory -pause"
         'Return " -volume 25 % -device ""rob's office speaker"" -pause"
+
+        'Return "-ip 192.168.200.132 -loop -text the ball is red"
+        'Return "-ip 192.168.200.132  -text the ball is red"
+
+        'Return "-ip 192.168.200.132 -loop -file c:\temp\test.mp3"
+        'Return "-ip 192.168.200.132 -file c:\temp\test.mp3"
+
+        'Return "-ip 192.168.200.132 -loop -dir c:\temp\loop -volume 5"
+        'Return "-ip 192.168.200.132 -dir c:\temp\loop"
 
     End Function
 

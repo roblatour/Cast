@@ -30,6 +30,8 @@ Module modMain
     Friend gCommandLine_File As Boolean = False
     Friend gCommandLine_File_Value As String = String.Empty
 
+    Friend gCommandLine_Loop As Boolean = False
+
     Friend gCommandLine_Help As Boolean = False
 
     Friend gCommandLine_Inventory As Boolean = False
@@ -149,10 +151,10 @@ Module modMain
                     End If
                 End If
 
-                If gCommandLine_File Then ProcessCastFile(gCommandLine_File_Value)
-                If gCommandLine_Text Then ProcessCastText(gCommandLine_Text_Value)
-                If gCommandLine_URL Then ProcessCastUrl(gCommandLine_URL_Value)
-                If gCommandLine_Dir Then ProcessCastDirectory(gCommandLine_Dir_Value, gCommandLine_Dir_AllFiles)
+                If gCommandLine_File Then ProcessCastFile(gCommandLine_File_Value, gCommandLine_Loop, False)
+                If gCommandLine_Text Then ProcessCastText(gCommandLine_Text_Value, gCommandLine_Loop)
+                If gCommandLine_URL Then ProcessCastUrl(gCommandLine_URL_Value, gCommandLine_Loop)
+                If gCommandLine_Dir Then ProcessCastDirectory(gCommandLine_Dir_Value, gCommandLine_Dir_AllFiles, gCommandLine_Loop)
 
                 CleanUpTempFiles()
 
@@ -787,6 +789,7 @@ Module modMain
 
                 End If
 
+
                 '*******************************************************************************************************
 
                 If Command.ToLower.StartsWith("help") Then
@@ -1013,6 +1016,16 @@ Module modMain
 
                 '*******************************************************************************************************
 
+                If Command.ToLower.StartsWith("loop") Then
+
+                    gCommandLine_Loop = True
+
+                    GoTo NextArgument
+
+                End If
+
+                '*******************************************************************************************************
+
                 If Command.ToLower.StartsWith("unmute") Then
 
                     gCommandLine_Unmute = True
@@ -1159,100 +1172,114 @@ NextArgument:
 
             Next
 
-            If gCommandLine_IP Then
-            Else
-                'No device names or IP Addresses indetified, so message will be broadcast to all devices by default
-                gCommandLine_IP = True
-                For Each Device In Devices
-                    gCommandLine_IP_Addresses.Add(Device.IPAddress)
-                Next
-            End If
 
-            If gCommandLine_Cancel Then
-                If gCommandLine_Text Then
-                    ErrorInCommandLine &= "the -cancel and -text switches can not be used together" & vbCrLf
+            If gCommandLine_Loop Then
+
+                    If gCommandLine_File OrElse gCommandLine_Dir OrElse gCommandLine_Text Or gCommandLine_URL Then
+                    Else
+                        WarningInCommandLine &= "unexpected -loop switch; this information will be ignored" & vbCrLf
+                        gCommandLine_Loop = False
+                    End If
+
                 End If
-                If gCommandLine_File Then
-                    ErrorInCommandLine &= "the -cancel and -file switches can not be used together" & vbCrLf
-                End If
-                If gCommandLine_URL Then
-                    ErrorInCommandLine &= "the -cancel and -url switches can not be used together" & vbCrLf
-                End If
-                If gCommandLine_Dir Then
-                    ErrorInCommandLine &= "the -cancel and -dir switches can not be used together" & vbCrLf
-                End If
-            End If
 
-            If gCommandLine_Dir And gCommandLine_Background Then
-                ErrorInCommandLine &= "the -dir and -background switches cannot be used together" & vbCrLf
-            End If
 
-            Dim CastingOptions As Integer = 0
-
-            If gCommandLine_Text Then CastingOptions += 1
-            If gCommandLine_File Then CastingOptions += 1
-            If gCommandLine_URL Then CastingOptions += 1
-            If gCommandLine_Dir Then CastingOptions += 1
-            If CastingOptions > 1 Then
-                ErrorInCommandLine &= "only one of the following switches can be used at the same time: -text, -file, -url, or -dir" & vbCrLf
-            End If
-
-            If gCommandLine_Mute AndAlso gCommandLine_Unmute Then
-                WarningInCommandLine &= "the -mute and -unmute switches can not be used at the same time, -unmute will be ignored" & vbCrLf
-                gCommandLine_Unmute = False
-            End If
-
-            Dim CountBeforeDuplicateCheck As Integer = gCommandLine_IP_Addresses.Count
-            gCommandLine_IP_Addresses = gCommandLine_IP_Addresses.Distinct().ToList()
-
-            If CountBeforeDuplicateCheck = gCommandLine_IP_Addresses.Count Then
-            Else
-                WarningInCommandLine &= "one or more Google devices were duplicated in the command line" & vbCrLf
-            End If
-
-            If gCommandLine_Text Then
-                If DefaultVoiceSetOK Then
+                If gCommandLine_IP Then
                 Else
-                    ErrorInCommandLine &= "Windows does not appear to have any installed voices as needed to cast a message based on text" & vbCrLf
+                    'No device names or IP Addresses indetified, so message will be broadcast to all devices by default
+                    gCommandLine_IP = True
+                    For Each Device In Devices
+                        gCommandLine_IP_Addresses.Add(Device.IPAddress)
+                    Next
                 End If
-            End If
 
-            If gCommandLine_Voice Then
-                If gCommandLine_Text Then
-                Else
-                    WarningInCommandLine &= "-voice switch was used without the -text switch, -voice switch will be ignored" & vbCrLf
-                End If
-            End If
-
-            If gCommandLine_Port Then
-                If gCommandLine_Text OrElse gCommandLine_File Then
-                Else
-                    WarningInCommandLine &= "-port switch was used without the -text or -file switch, -port switch will be ignored" & vbCrLf
-                    gCommandLine_Port = False
-                End If
-            End If
-
-            If gCommandLine_About OrElse gCommandLine_Help OrElse gCommandLine_Cancel OrElse gCommandLine_Inventory OrElse gCommandLine_Mute OrElse gCommandLine_Unmute OrElse gCommandLine_Volume Then
-            Else
-                If gCommandLine_Text OrElse gCommandLine_File OrElse gCommandLine_URL OrElse gCommandLine_Dir Then
-                Else
-                    If ErrorInCommandLine = String.Empty Then
-                        WarningInCommandLine &= "there was no -text, -file, -url, or -dir switch, so there is nothing to cast" & vbCrLf
+                If gCommandLine_Cancel Then
+                    If gCommandLine_Text Then
+                        ErrorInCommandLine &= "the -cancel and -text switches can not be used together" & vbCrLf
+                    End If
+                    If gCommandLine_File Then
+                        ErrorInCommandLine &= "the -cancel and -file switches can not be used together" & vbCrLf
+                    End If
+                    If gCommandLine_URL Then
+                        ErrorInCommandLine &= "the -cancel and -url switches can not be used together" & vbCrLf
+                    End If
+                    If gCommandLine_Dir Then
+                        ErrorInCommandLine &= "the -cancel and -dir switches can not be used together" & vbCrLf
                     End If
                 End If
-            End If
 
-            If gCommandLine_Pause AndAlso (Commands.Count = 2) Then
-                gCommandLine_Help = True
-            End If
-
-            If gCommandLine_Random Then
-                If gCommandLine_Dir Then
-                Else
-                    WarningInCommandLine &= "-random switch was used without the -dir switch, -random switch will be ignored" & vbCrLf
-                    gCommandLine_Port = False
+                If gCommandLine_Dir And gCommandLine_Background Then
+                    ErrorInCommandLine &= "the -dir and -background switches cannot be used together" & vbCrLf
                 End If
-            End If
+
+                Dim CastingOptions As Integer = 0
+
+                If gCommandLine_Text Then CastingOptions += 1
+                If gCommandLine_File Then CastingOptions += 1
+                If gCommandLine_URL Then CastingOptions += 1
+                If gCommandLine_Dir Then CastingOptions += 1
+                If CastingOptions > 1 Then
+                    ErrorInCommandLine &= "only one of the following switches can be used at the same time: -text, -file, -url, or -dir" & vbCrLf
+                End If
+
+                If gCommandLine_Mute AndAlso gCommandLine_Unmute Then
+                    WarningInCommandLine &= "the -mute and -unmute switches can not be used at the same time, -unmute will be ignored" & vbCrLf
+                    gCommandLine_Unmute = False
+                End If
+
+                Dim CountBeforeDuplicateCheck As Integer = gCommandLine_IP_Addresses.Count
+                gCommandLine_IP_Addresses = gCommandLine_IP_Addresses.Distinct().ToList()
+
+            'The following could be the result of two or more Google devices being in a Google Cast group
+
+            'If CountBeforeDuplicateCheck = gCommandLine_IP_Addresses.Count Then
+            'Else
+            '    WarningInCommandLine &= "one or more Google devices were duplicated in the command line" & vbCrLf
+            'End If
+
+            If gCommandLine_Text Then
+                    If DefaultVoiceSetOK Then
+                    Else
+                        ErrorInCommandLine &= "Windows does not appear to have any installed voices as needed to cast a message based on text" & vbCrLf
+                    End If
+                End If
+
+                If gCommandLine_Voice Then
+                    If gCommandLine_Text Then
+                    Else
+                        WarningInCommandLine &= "-voice switch was used without the -text switch, -voice switch will be ignored" & vbCrLf
+                    End If
+                End If
+
+                If gCommandLine_Port Then
+                    If gCommandLine_Text OrElse gCommandLine_File Then
+                    Else
+                        WarningInCommandLine &= "-port switch was used without the -text or -file switch, -port switch will be ignored" & vbCrLf
+                        gCommandLine_Port = False
+                    End If
+                End If
+
+                If gCommandLine_About OrElse gCommandLine_Help OrElse gCommandLine_Cancel OrElse gCommandLine_Inventory OrElse gCommandLine_Mute OrElse gCommandLine_Unmute OrElse gCommandLine_Volume Then
+                Else
+                    If gCommandLine_Text OrElse gCommandLine_File OrElse gCommandLine_URL OrElse gCommandLine_Dir Then
+                    Else
+                        If ErrorInCommandLine = String.Empty Then
+                            WarningInCommandLine &= "there was no -text, -file, -url, or -dir switch, so there is nothing to cast" & vbCrLf
+                        End If
+                    End If
+                End If
+
+                If gCommandLine_Pause AndAlso (Commands.Count = 2) Then
+                    gCommandLine_Help = True
+                End If
+
+                If gCommandLine_Random Then
+                    If gCommandLine_Dir Then
+                    Else
+                        WarningInCommandLine &= "-random switch was used without the -dir switch, -random switch will be ignored" & vbCrLf
+                        gCommandLine_Port = False
+                    End If
+                End If
 
         Catch ex As Exception
 
@@ -1269,26 +1296,32 @@ NextArgument:
         Const Quote As String = """"
         Const Hyphen As String = "-"
 
-        Dim QuoteON As Boolean = False
-        Dim SplitCharcter As String = Chr(255).ToString
+        Try
 
-        For Each Character As Char In CommandLine
+            Dim QuoteON As Boolean = False
+            Dim SplitCharcter As String = Chr(255).ToString
 
-            If Character = Quote Then
-                QuoteON = (Not QuoteON)
-            End If
+            For Each Character As Char In CommandLine
 
-            If QuoteON Then
-                ReturnValue &= Character
-            Else
-                If Character = Hyphen Then
-                    ReturnValue &= SplitCharcter
-                Else
-                    ReturnValue &= Character
+                If Character = Quote Then
+                    QuoteON = (Not QuoteON)
                 End If
-            End If
 
-        Next
+                If QuoteON Then
+                    ReturnValue &= Character
+                Else
+                    If Character = Hyphen Then
+                        ReturnValue &= SplitCharcter
+                    Else
+                        ReturnValue &= Character
+                    End If
+                End If
+
+            Next
+
+        Catch ex As Exception
+
+        End Try
 
         Return ReturnValue
 
@@ -1345,9 +1378,15 @@ NextArgument:
 
     End Sub
 
-    Private Sub ProcessCastText(ByVal TextToCast As String)
+    Private Sub ProcessCastText(ByVal TextToCast As String, ByVal RedoInLoop As Boolean)
 
-        Console_WriteLineInColour("Casting """ & TextToCast & """", ConsoleColor.White)
+RedoInLoop:
+
+        If gCommandLine_Loop Then
+            Console_WriteLineInColour("Casting """ & TextToCast & """ in a loop, press the 'X' key to exit", ConsoleColor.White)
+        Else
+            Console_WriteLineInColour("Casting """ & TextToCast & """", ConsoleColor.White)
+        End If
 
         Try
 
@@ -1411,9 +1450,13 @@ NextArgument:
 
             End If
 
+            StopEmbeddedWebServer()
+
         Catch ex As Exception
 
         End Try
+
+        If RedoInLoop Then GoTo RedoInLoop
 
         CastingComplete()
 
@@ -1425,9 +1468,11 @@ NextArgument:
 
     End Sub
 
-    Private Sub ProcessCastDirectory(ByVal Directory As String, ByVal AllPathAndFilenames As String())
+    Private Sub ProcessCastDirectory(ByVal Directory As String, ByVal AllPathAndFilenames As String(), ByVal RedoInLoop As Boolean)
 
         AllPathAndFilenames = CleanUpPlayList(AllPathAndFilenames)
+
+RedoInLoop:
 
         If AllPathAndFilenames IsNot Nothing Then
 
@@ -1441,7 +1486,7 @@ NextArgument:
 
                     RandomNumber = CInt(Math.Ceiling(Rnd() * AllPathAndFilenames.Count())) - 1
 
-                    ProcessCastFile(AllPathAndFilenames(RandomNumber))
+                    ProcessCastFile(AllPathAndFilenames(RandomNumber), False, True)
 
                     AllPathAndFilenames(RandomNumber) = String.Empty
                     AllPathAndFilenames = CleanUpPlayList(AllPathAndFilenames)
@@ -1458,7 +1503,7 @@ NextArgument:
 
                     If filename.StartsWith("~cast~") Then
                     Else
-                        ProcessCastFile(filename)
+                        ProcessCastFile(filename, False, True)
                     End If
 
                     MemoryManagement.FlushMemory()
@@ -1468,6 +1513,8 @@ NextArgument:
             End If
 
         End If
+
+        If RedoInLoop Then GoTo RedoInLoop ' user must press X from the console to exit
 
         CastingComplete()
 
@@ -1536,14 +1583,11 @@ NextArgument:
 
     End Function
 
-    Private Sub ProcessCastFile(ByVal PathAndFilename As String)
+    Private Sub ProcessCastFile(ByVal PathAndFilename As String, ByVal RedoInLoop As Boolean, ByVal CastingFileAsAMemeberOfADirectory As Boolean)
 
         Static counter As Integer = 0
-        counter += 1
 
         If PathAndFilename Is Nothing Then Exit Sub
-
-        Console_WriteLineInColour("Casting - " & counter & " - """ & PathAndFilename & """", ConsoleColor.White)
 
         gPlayThroughPCSpeakers = gCommandLine_IP_Addresses.Contains(gHostComputerIPAddress)
 
@@ -1553,9 +1597,24 @@ NextArgument:
             Dim Filename As String = Path.GetFileName(PathAndFilename)
 
             'cast to all devices in parallel
-            Dim CoordinateTheStartOfStreaming As Boolean = (gCommandLine_IP_Addresses.Count > 1)
+
+            Dim CoordinateTheStartOfStreaming As Boolean
+
+RedoInLoop:
+
+            CoordinateTheStartOfStreaming = (gCommandLine_IP_Addresses.Count > 1)
 
             StartEmbeddedWebServer(System.IO.Path.GetTempPath(), CoordinateTheStartOfStreaming)
+
+            counter += 1
+
+            If CastingFileAsAMemeberOfADirectory Then
+                Console_WriteLineInColour("Casting - " & counter & " - """ & PathAndFilename & """ as directoy file, press the 'X' key to exit", ConsoleColor.White)
+            ElseIf RedoInLoop Then
+                Console_WriteLineInColour("Casting - " & counter & " - """ & PathAndFilename & """ in a loop, press the 'X' key to exit", ConsoleColor.White)
+            Else
+                Console_WriteLineInColour("Casting - " & counter & " - """ & PathAndFilename & """", ConsoleColor.White)
+            End If
 
             Parallel.ForEach(gCommandLine_IP_Addresses,
                 Sub(IPAddress)
@@ -1584,6 +1643,8 @@ NextArgument:
 
             StopEmbeddedWebServer()
 
+            If RedoInLoop Then GoTo RedoInLoop
+
         Catch ex As Exception
             ex = ex
         End Try
@@ -1611,7 +1672,7 @@ NextArgument:
 
     End Sub
 
-    Private Sub ProcessCastUrl(ByVal iURI As Uri)
+    Private Sub ProcessCastUrl(ByVal iURI As Uri, ByVal RedoInLoop As Boolean)
 
         Console_WriteLineInColour("Casting " & iURI.ToString, ConsoleColor.White)
 
@@ -1620,6 +1681,8 @@ NextArgument:
         Try
 
             Dim CoordinateTheStartOfStreaming As Boolean = (gCommandLine_IP_Addresses.Count > 1)
+
+RedoInLoop:
 
             'cast to all devices in parallel
 
@@ -1638,6 +1701,10 @@ NextArgument:
                     System.Windows.Forms.Application.DoEvents()
                 End While
             End If
+
+            StopEmbeddedWebServer()
+
+            If RedoInLoop Then GoTo RedoInLoop
 
         Catch ex As Exception
 
@@ -1849,6 +1916,9 @@ NextArgument:
         Console_WriteLineInColour("              use the -inventory switch to determine available IP Addresses")
         Console_WriteLineInColour("              IP Addresses must be seperated by spaces")
         Console_WriteLineInColour(" ")
+        Console_WriteLineInColour(" -loop        used with -text, -file, -dir, or -url to play cast in a continuious loop")
+        Console_WriteLineInColour("              when playing in a loop, press the 'X' key to exit")
+        Console_WriteLineInColour(" ")
         Console_WriteLineInColour(" -mute        followed by the device(s) to mute")
         Console_WriteLineInColour(" ")
         Console_WriteLineInColour(" -pause       prompt to 'Press enter to continue' when processing finishes")
@@ -1904,9 +1974,10 @@ NextArgument:
         Console_WriteLineInColour(" cast -text This test is a shout -volume 100")
         Console_WriteLineInColour(" cast -text This is a test using an alternative port -port 9696")
         Console_WriteLineInColour(" cast -text This is a test using a specific voice -voice Microsoft Zira Desktop")
-        Console_WriteLineInColour(" cast -file C:\Users\Rob Latour\Music\Eagles\Hotel California.mp3")
-        Console_WriteLineInColour(" cast -file C:\Users\Rob Latour\Music\Eagles\Hotel California.mp3 -background")
-        Console_WriteLineInColour(" cast -dir C:\Users\Rob Latour\Music\Eagles -random")
+        Console_WriteLineInColour(" cast -file C:\Users\YourUserID\Music\Eagles\Hotel California.mp3")
+        Console_WriteLineInColour(" cast -file C:\Users\YourUserID\Music\Eagles\Hotel California.mp3 -background")
+        Console_WriteLineInColour(" cast -dir C:\Users\YourUserID\Music\Eagles -random")
+        Console_WriteLineInColour(" cast -loop -dir C:\Users\YourUserID\Music\Lullabies")
         Console_WriteLineInColour(" cast -url ""https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3""")
         Console_WriteLineInColour(" cast -mute -device ""Office home""")
         Console_WriteLineInColour(" cast -volume 45")
