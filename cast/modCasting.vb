@@ -440,7 +440,11 @@ Module modCasting
         Dim ThisDevice As Device = GetDevice(IndividualIPAddress)
 
         Try
-            ThisDevice.Player.StopApp()
+
+            If ThisDevice.Player IsNot Nothing Then
+                ThisDevice.Player.StopApp()
+            End If
+
         Catch ex As Exception
         End Try
 

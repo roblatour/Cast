@@ -1,19 +1,15 @@
 ﻿Imports System.Net
 Imports System.IO
 Imports System.Threading
+Imports System.Reflection.Emit
 '
 ' ref: https://github.com/roblatour/cast
-'
-' ref: https://stackoverflow.com/questions/189549/embedding-dlls-in-a-compiled-executable
-' Install-Package Costura.Fody which embeds the sharpcast.dll
-
-' ref https://www.dotnetperls.com/async-vbnet
 '
 Module modMain
 
     Const ThisIsABetaRelease As Boolean = False
 
-    Const gCopyright As String = "Copyright (c) 2023, Rob Latour"
+    Const gCopyright As String = "Copyright (c) 2024, Rob Latour"
     Const gLicense As String = "MIT"
     Friend Version As String = ""
 
@@ -98,6 +94,8 @@ Module modMain
 
             AddHandler Console.CancelKeyPress, AddressOf HandleCtrl_C
 
+            gHostComputerName = My.Computer.Name
+            gHostComputerIPAddress = GetIPHostAddress()
             InventoryGoogleDevices()
             DefaultVoiceSetOK = InitializeVoices()
             EstablishAcceptableFileTypes()
@@ -1175,60 +1173,60 @@ NextArgument:
 
             If gCommandLine_Loop Then
 
-                    If gCommandLine_File OrElse gCommandLine_Dir OrElse gCommandLine_Text Or gCommandLine_URL Then
-                    Else
-                        WarningInCommandLine &= "unexpected -loop switch; this information will be ignored" & vbCrLf
-                        gCommandLine_Loop = False
-                    End If
-
-                End If
-
-
-                If gCommandLine_IP Then
+                If gCommandLine_File OrElse gCommandLine_Dir OrElse gCommandLine_Text Or gCommandLine_URL Then
                 Else
-                    'No device names or IP Addresses indetified, so message will be broadcast to all devices by default
-                    gCommandLine_IP = True
-                    For Each Device In Devices
-                        gCommandLine_IP_Addresses.Add(Device.IPAddress)
-                    Next
+                    WarningInCommandLine &= "unexpected -loop switch; this information will be ignored" & vbCrLf
+                    gCommandLine_Loop = False
                 End If
 
-                If gCommandLine_Cancel Then
-                    If gCommandLine_Text Then
-                        ErrorInCommandLine &= "the -cancel and -text switches can not be used together" & vbCrLf
-                    End If
-                    If gCommandLine_File Then
-                        ErrorInCommandLine &= "the -cancel and -file switches can not be used together" & vbCrLf
-                    End If
-                    If gCommandLine_URL Then
-                        ErrorInCommandLine &= "the -cancel and -url switches can not be used together" & vbCrLf
-                    End If
-                    If gCommandLine_Dir Then
-                        ErrorInCommandLine &= "the -cancel and -dir switches can not be used together" & vbCrLf
-                    End If
+            End If
+
+
+            If gCommandLine_IP Then
+            Else
+                'No device names or IP Addresses indetified, so message will be broadcast to all devices by default
+                gCommandLine_IP = True
+                For Each Device In Devices
+                    gCommandLine_IP_Addresses.Add(Device.IPAddress)
+                Next
+            End If
+
+            If gCommandLine_Cancel Then
+                If gCommandLine_Text Then
+                    ErrorInCommandLine &= "the -cancel and -text switches can not be used together" & vbCrLf
                 End If
-
-                If gCommandLine_Dir And gCommandLine_Background Then
-                    ErrorInCommandLine &= "the -dir and -background switches cannot be used together" & vbCrLf
+                If gCommandLine_File Then
+                    ErrorInCommandLine &= "the -cancel and -file switches can not be used together" & vbCrLf
                 End If
-
-                Dim CastingOptions As Integer = 0
-
-                If gCommandLine_Text Then CastingOptions += 1
-                If gCommandLine_File Then CastingOptions += 1
-                If gCommandLine_URL Then CastingOptions += 1
-                If gCommandLine_Dir Then CastingOptions += 1
-                If CastingOptions > 1 Then
-                    ErrorInCommandLine &= "only one of the following switches can be used at the same time: -text, -file, -url, or -dir" & vbCrLf
+                If gCommandLine_URL Then
+                    ErrorInCommandLine &= "the -cancel and -url switches can not be used together" & vbCrLf
                 End If
-
-                If gCommandLine_Mute AndAlso gCommandLine_Unmute Then
-                    WarningInCommandLine &= "the -mute and -unmute switches can not be used at the same time, -unmute will be ignored" & vbCrLf
-                    gCommandLine_Unmute = False
+                If gCommandLine_Dir Then
+                    ErrorInCommandLine &= "the -cancel and -dir switches can not be used together" & vbCrLf
                 End If
+            End If
 
-                Dim CountBeforeDuplicateCheck As Integer = gCommandLine_IP_Addresses.Count
-                gCommandLine_IP_Addresses = gCommandLine_IP_Addresses.Distinct().ToList()
+            If gCommandLine_Dir And gCommandLine_Background Then
+                ErrorInCommandLine &= "the -dir and -background switches cannot be used together" & vbCrLf
+            End If
+
+            Dim CastingOptions As Integer = 0
+
+            If gCommandLine_Text Then CastingOptions += 1
+            If gCommandLine_File Then CastingOptions += 1
+            If gCommandLine_URL Then CastingOptions += 1
+            If gCommandLine_Dir Then CastingOptions += 1
+            If CastingOptions > 1 Then
+                ErrorInCommandLine &= "only one of the following switches can be used at the same time: -text, -file, -url, or -dir" & vbCrLf
+            End If
+
+            If gCommandLine_Mute AndAlso gCommandLine_Unmute Then
+                WarningInCommandLine &= "the -mute and -unmute switches can not be used at the same time, -unmute will be ignored" & vbCrLf
+                gCommandLine_Unmute = False
+            End If
+
+            Dim CountBeforeDuplicateCheck As Integer = gCommandLine_IP_Addresses.Count
+            gCommandLine_IP_Addresses = gCommandLine_IP_Addresses.Distinct().ToList()
 
             'The following could be the result of two or more Google devices being in a Google Cast group
 
@@ -1238,48 +1236,48 @@ NextArgument:
             'End If
 
             If gCommandLine_Text Then
-                    If DefaultVoiceSetOK Then
-                    Else
-                        ErrorInCommandLine &= "Windows does not appear to have any installed voices as needed to cast a message based on text" & vbCrLf
-                    End If
-                End If
-
-                If gCommandLine_Voice Then
-                    If gCommandLine_Text Then
-                    Else
-                        WarningInCommandLine &= "-voice switch was used without the -text switch, -voice switch will be ignored" & vbCrLf
-                    End If
-                End If
-
-                If gCommandLine_Port Then
-                    If gCommandLine_Text OrElse gCommandLine_File Then
-                    Else
-                        WarningInCommandLine &= "-port switch was used without the -text or -file switch, -port switch will be ignored" & vbCrLf
-                        gCommandLine_Port = False
-                    End If
-                End If
-
-                If gCommandLine_About OrElse gCommandLine_Help OrElse gCommandLine_Cancel OrElse gCommandLine_Inventory OrElse gCommandLine_Mute OrElse gCommandLine_Unmute OrElse gCommandLine_Volume Then
+                If DefaultVoiceSetOK Then
                 Else
-                    If gCommandLine_Text OrElse gCommandLine_File OrElse gCommandLine_URL OrElse gCommandLine_Dir Then
-                    Else
-                        If ErrorInCommandLine = String.Empty Then
-                            WarningInCommandLine &= "there was no -text, -file, -url, or -dir switch, so there is nothing to cast" & vbCrLf
-                        End If
+                    ErrorInCommandLine &= "Windows does not appear to have any installed voices as needed to cast a message based on text" & vbCrLf
+                End If
+            End If
+
+            If gCommandLine_Voice Then
+                If gCommandLine_Text Then
+                Else
+                    WarningInCommandLine &= "-voice switch was used without the -text switch, -voice switch will be ignored" & vbCrLf
+                End If
+            End If
+
+            If gCommandLine_Port Then
+                If gCommandLine_Text OrElse gCommandLine_File Then
+                Else
+                    WarningInCommandLine &= "-port switch was used without the -text or -file switch, -port switch will be ignored" & vbCrLf
+                    gCommandLine_Port = False
+                End If
+            End If
+
+            If gCommandLine_About OrElse gCommandLine_Help OrElse gCommandLine_Cancel OrElse gCommandLine_Inventory OrElse gCommandLine_Mute OrElse gCommandLine_Unmute OrElse gCommandLine_Volume Then
+            Else
+                If gCommandLine_Text OrElse gCommandLine_File OrElse gCommandLine_URL OrElse gCommandLine_Dir Then
+                Else
+                    If ErrorInCommandLine = String.Empty Then
+                        WarningInCommandLine &= "there was no -text, -file, -url, or -dir switch, so there is nothing to cast" & vbCrLf
                     End If
                 End If
+            End If
 
-                If gCommandLine_Pause AndAlso (Commands.Count = 2) Then
-                    gCommandLine_Help = True
-                End If
+            If gCommandLine_Pause AndAlso (Commands.Count = 2) Then
+                gCommandLine_Help = True
+            End If
 
-                If gCommandLine_Random Then
-                    If gCommandLine_Dir Then
-                    Else
-                        WarningInCommandLine &= "-random switch was used without the -dir switch, -random switch will be ignored" & vbCrLf
-                        gCommandLine_Port = False
-                    End If
+            If gCommandLine_Random Then
+                If gCommandLine_Dir Then
+                Else
+                    WarningInCommandLine &= "-random switch was used without the -dir switch, -random switch will be ignored" & vbCrLf
+                    gCommandLine_Port = False
                 End If
+            End If
 
         Catch ex As Exception
 
@@ -1350,17 +1348,28 @@ NextArgument:
 
         Console_WriteLineInColour(Message, ConsoleColor.Cyan)
 
+        Dim LastDeviceName As String = String.Empty
+        Dim LastReportedIPAddress As String = String.Empty
+
         For Each Device In Devices
 
-            Dim DeviceVolumeString As String = Device.Volume.ToString & "%"
+            If DebugIsOn OrElse (Device.IPAddress.ToString <> LastReportedIPAddress) OrElse (Device.DeviceName <> LastDeviceName) Then
 
-            Message = ConvertToFixedStringLength(Device.FriendlyName, 30) & " " &
-                      ConvertToFixedStringLength(Device.DeviceName, 25) & " " &
-                      ConvertToFixedStringLength(Device.IPAddress.ToString, 20) & " " &
-                      ConvertToFixedStringLength(DeviceVolumeString, 8) & " " &
-                      IIf(Device.Muted, "Muted", "Unmuted")
+                Dim DeviceVolumeString As String = Device.Volume.ToString & "%"
 
-            Console_WriteLineInColour(Message, ConsoleColor.White)
+                Message = ConvertToFixedStringLength(Device.FriendlyName, 30) & " " &
+                          ConvertToFixedStringLength(Device.DeviceName, 25) & " " &
+                          ConvertToFixedStringLength(Device.IPAddress.ToString, 20) & " " &
+                          ConvertToFixedStringLength(DeviceVolumeString, 8) & " " &
+                          IIf(Device.Muted, "Muted", "Unmuted")
+
+                Console_WriteLineInColour(Message, ConsoleColor.White)
+
+            End If
+
+            LastDeviceName = Device.DeviceName
+            LastReportedIPAddress = Device.IPAddress.ToString
+
         Next
 
         'Inventory installed voices
@@ -1426,9 +1435,9 @@ RedoInLoop:
             Dim CoordinateTheStartOfStreaming As Boolean = (gCommandLine_IP_Addresses.Count > 1)
 
             Parallel.ForEach(gCommandLine_IP_Addresses,
-                Sub(IPAddress)
-                    CastAFile(IPAddress, TempFileInUse)
-                End Sub)
+                 Sub(IPAddress)
+                     CastAFile(IPAddress, TempFileInUse)
+                 End Sub)
 
             'wait until the casting is complete on all devices 
 

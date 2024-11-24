@@ -17,10 +17,12 @@ Module modMyWebServer
     Friend Sub EstablishAcceptableFileTypes()
 
         'MyDictionaryOfExtentionsAndMimeTypes.Add("flac", "audio/flac")
-        MyDictionaryOfExtentionsAndMimeTypes.Add("mp3", "audio/mpeg")
-        MyDictionaryOfExtentionsAndMimeTypes.Add("mp4", "video/mp4")
         MyDictionaryOfExtentionsAndMimeTypes.Add("txt", "text/plain")
+        MyDictionaryOfExtentionsAndMimeTypes.Add("mp3", "audio/mpeg")
         MyDictionaryOfExtentionsAndMimeTypes.Add("wav", "audio/wav")
+        MyDictionaryOfExtentionsAndMimeTypes.Add("m3u8", "video/m3u8")
+        MyDictionaryOfExtentionsAndMimeTypes.Add("mp4", "video/mp4")
+
 
     End Sub
 

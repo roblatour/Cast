@@ -19,11 +19,11 @@
         ' Return "-ip n.n.n.27 -volume 30 -file ""c:\temp\grace test.mp3"" -background"
         'Return "-ip n.n.n.27 -volume 10 -file ""c:\temp\grace.mp3"" -pause"
 
-        Return "-inventory -pause"
+        'Return "-inventory -pause"
 
         'Return "cast robspc -inventory -pause"
         'Return "-device ""Rob's office speaker"""
-        'Return "-device ""Rob's office speaker""  -text the ball is red -pause"
+        'Return "-device ""Rob's office display""  -text the ball is red -pause"
         'Return "-ip 192.168.200.132 -voice Microsoft Zira Desktop -text the ball is red -pause"
         'Return "-text the ball is blue -pause"
         'Return "-device ""Rob's office speaker"" -volume 20 -text the ball is red -pause"
@@ -84,7 +84,7 @@
         'Return "-device ""rob's office speaker"" -file c:/temp/grace.mp3 -pause"
 
         'Return "-device ""rob's office speaker"" -file c:/temp/BigBuckBunny.mp4 -pause"
-        'Return "-device ""rob's office speaker"" -file ""c:\temp\007 Soundtrack - Best of BondJames Bond - 01 - James Bond Theme Song.mp3"" -pause"
+        'Return "-device ""rob's office display"" -file ""c:\temp\007 Soundtrack - Best of BondJames Bond - 01 - James Bond Theme Song.mp3"" -pause"
         'Return "-device ""rob's office speaker"" -file ""c:\temp\test.mp3"" -pause"
         'Return "-device ""rob's office speaker"" -file ""c:\temp\Grace.mp3"" -pause"
 
@@ -116,7 +116,7 @@
 
         'Return "-device ""Rob's office speaker"" -url ""http://www.abc.net.au/res/streaming/audio/mp3/news_radio.wav"" -pause"
 
-        'Return " -inventory -pause"
+        Return " -inventory -pause"
         'Return "-device ""Rob's office speaker"" -mute -inventory -pause"
         'Return "-unmute -inventory -pause"
 

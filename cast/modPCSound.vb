@@ -108,6 +108,8 @@ Module modPCSound
 
                                                                   End Try
 
+                                                                  Return 0
+
                                                               End Function))
 
             PlayOnNewThread.Start()

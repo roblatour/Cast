@@ -4,6 +4,8 @@ Imports System.Net
 Imports System.Threading.Tasks
 Imports Zeroconf
 Imports SharpCast
+Imports System.IO
+Imports System.Text.RegularExpressions
 
 Module ModMyLocator
 
@@ -53,9 +55,8 @@ Module ModMyLocator
 
             Const Protocal As String = "_googlecast._tcp.local."
 
-            Dim PropertySet As String
-            Dim DeviceFriendlyName As String
-            Dim DeviceName As String
+                Dim DeviceFriendlyName As String
+            Dim DeviceType As String
             Dim DeviceIPAddress As IPAddress
             Dim Device As Device
             Dim PCVolume As Double
@@ -68,14 +69,14 @@ Module ModMyLocator
             DeviceIPAddress = gHostComputerIPAddress
             PCVolume = GetCurrentPCVolume()
             If gNoDefaultSpeaker Then
-                DeviceName = "PC speakers (unavailable)"
+                DeviceType = "PC speakers (unavailable)"
                 PCIsMuted = True
             Else
-                DeviceName = "PC speakers"
+                DeviceType = "PC speakers"
                 PCIsMuted = GetCurrentPCMuteSetting()
             End If
 
-            Device = New Device(DeviceFriendlyName, DeviceName, DeviceIPAddress, PCVolume, PCIsMuted)
+            Device = New Device(DeviceFriendlyName, DeviceType, DeviceIPAddress, PCVolume, PCIsMuted)
             LocatedDevices.Add(Device)
 
             Dim TimeSpan2Seconds As TimeSpan = New TimeSpan(0, 0, 2) ' changed from 3 to 2 in v1.9
@@ -89,11 +90,15 @@ Module ModMyLocator
 
             For Each GoogleDevice As IZeroconfHost In GoogleDevices
 
-                PropertySet = GoogleDevice.Services.Item(Protocal).ToString
-                DeviceFriendlyName = PropertySet.Remove(PropertySet.IndexOf(vbCrLf & "ca = ")).Remove(0, PropertySet.IndexOf("fn = ") + 5)
-                DeviceName = PropertySet.Remove(PropertySet.IndexOf(vbCrLf & "ic = ")).Remove(0, PropertySet.IndexOf("md = ") + 5)
+                DeviceFriendlyName = GetFriendlyDeviceName(GoogleDevice.IPAddress.ToString)
+
+                DeviceType = GoogleDevice.DisplayName.Replace("Google-", "")
+                DeviceType = DeviceType.Remove(DeviceType.LastIndexOf("-"))
+                DeviceType = DeviceType.Replace("-", " ")
+
                 DeviceIPAddress = IPAddress.Parse(GoogleDevice.IPAddress)
-                Device = New Device(DeviceFriendlyName, DeviceName, DeviceIPAddress, 0, False)
+
+                Device = New Device(DeviceFriendlyName, DeviceType, DeviceIPAddress, 0, False)
                 Device.Player.Connect()
                 Device.Volume = GetCurrentDeviceVolume(Device)
                 Device.Muted = GetCurrentDeviceMuteSetting(Device)
@@ -129,9 +134,8 @@ Module ModMyLocator
 
             Const Protocal As String = "_googlecast._tcp.local."
 
-            Dim PropertySet As String
             Dim DeviceFriendlyName As String
-            Dim DeviceName As String
+            Dim DeviceType As String
             Dim DeviceIPAddress As IPAddress
             Dim DeviceVolume As Double
             Dim DeviceIsMuted As Boolean
@@ -163,12 +167,16 @@ Module ModMyLocator
                     ' entry already there, do not add again
                 Else
                     ' new entry found, add it
-                    PropertySet = GoogleDevice.Services.Item(Protocal).ToString
-                    DeviceFriendlyName = PropertySet.Remove(PropertySet.IndexOf(vbCrLf & "ca = ")).Remove(0, PropertySet.IndexOf("fn = ") + 5)
-                    DeviceName = PropertySet.Remove(PropertySet.IndexOf(vbCrLf & "ic = ")).Remove(0, PropertySet.IndexOf("md = ") + 5)
+
+                    DeviceFriendlyName = GetFriendlyDeviceName(GoogleDevice.IPAddress.ToString)
+
+                    DeviceType = GoogleDevice.DisplayName.Replace("Google-", "")
+                    DeviceType = DeviceType.Remove(DeviceType.LastIndexOf("-"))
+                    DeviceType = DeviceType.Replace("-", " ")
+
                     DeviceVolume = GetCurrentVolume(DeviceIPAddress)
                     DeviceIsMuted = GetCurrentMuteSetting(DeviceIPAddress)
-                    Device = New Device(DeviceFriendlyName, DeviceName, DeviceIPAddress, DeviceVolume, DeviceIsMuted)
+                    Device = New Device(DeviceFriendlyName, DeviceType, DeviceIPAddress, DeviceVolume, DeviceIsMuted)
 
                     LocatedDevices.Add(Device)
 
@@ -190,6 +198,38 @@ Module ModMyLocator
 
         Return LocatedDevices
 
+    End Function
+
+    Private Const PORT As Integer = 8008
+
+    Friend Function GetFriendlyDeviceName(ipAddress As String) As String
+        Try
+            ' Create HTTP request to the Chromecast's info endpoint
+            Dim url As String = $"http://{ipAddress}:{PORT}/setup/eureka_info"
+            Dim request As HttpWebRequest = DirectCast(WebRequest.Create(url), HttpWebRequest)
+            request.Method = "GET"
+            request.Timeout = 5000 ' 5 second timeout
+
+            ' Get response
+            Using response As HttpWebResponse = DirectCast(request.GetResponse(), HttpWebResponse)
+                Using reader As New StreamReader(response.GetResponseStream())
+                    Dim result As String = reader.ReadToEnd()
+
+                    ' Extract name from JSON response
+                    ' Note: Using simple regex for demo. In production, use proper JSON parser
+                    Dim nameMatch As Match = Regex.Match(result, """name"":""([^""]+)""")
+                    If nameMatch.Success Then
+                        Return nameMatch.Groups(1).Value
+                    End If
+                End Using
+            End Using
+
+            Return String.Empty
+        Catch ex As Exception
+            ' Handle any network or other errors
+            Console.WriteLine($"Error getting device name: {ex.Message}")
+            Return String.Empty
+        End Try
     End Function
 
 End Module

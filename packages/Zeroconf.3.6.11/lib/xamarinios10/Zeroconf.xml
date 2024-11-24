@@ -1,0 +1,429 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Zeroconf</name>
+    </assembly>
+    <members>
+        <member name="M:Zeroconf.BonjourBrowser.#ctor(System.TimeSpan)">
+            <summary>
+            Implements iOS mDNS browse and resolve
+            </summary>
+            <param name="resolveTimeout">Time limit for NSNetService.Resolve() operation</param>
+        </member>
+        <member name="T:Zeroconf.IZeroconfHost">
+            <summary>
+                A ZeroConf record response
+            </summary>
+        </member>
+        <member name="P:Zeroconf.IZeroconfHost.DisplayName">
+            <summary>
+                Name
+            </summary>
+        </member>
+        <member name="P:Zeroconf.IZeroconfHost.Id">
+            <summary>
+                Id, possibly different than the Name
+            </summary>
+        </member>
+        <member name="P:Zeroconf.IZeroconfHost.IPAddress">
+            <summary>
+                IP Address (alias for IPAddresses.First())
+            </summary>
+        </member>
+        <member name="P:Zeroconf.IZeroconfHost.IPAddresses">
+            <summary>
+                IP Addresses
+            </summary>
+        </member>
+        <member name="P:Zeroconf.IZeroconfHost.Services">
+            <summary>
+                Services offered by this host (based on services queried for)
+            </summary>
+        </member>
+        <member name="T:Zeroconf.IService">
+            <summary>
+                Represents a service provided by a host
+            </summary>
+        </member>
+        <member name="P:Zeroconf.IService.Name">
+            <summary>
+                This is the name retrieved from the PTR record
+            e.g. _http._tcp.local.
+            </summary>
+        </member>
+        <member name="P:Zeroconf.IService.ServiceName">
+            <summary>
+                This is the name retrieved from the SRV record e.g. myserver._http._tcp.local.
+            </summary>
+        </member>
+        <member name="P:Zeroconf.IService.Port">
+            <summary>
+                Port
+            </summary>
+        </member>
+        <member name="P:Zeroconf.IService.Ttl">
+            <summary>
+            Time-to-live
+            </summary>
+        </member>
+        <member name="P:Zeroconf.IService.Properties">
+            <summary>
+                Properties of the object. Most services have a single set of properties, but some services
+                may return multiple sets of properties
+            </summary>
+        </member>
+        <member name="T:Zeroconf.ZeroconfHost">
+            <summary>
+                A ZeroConf record response
+            </summary>
+        </member>
+        <member name="P:Zeroconf.ZeroconfHost.Id">
+            <summary>
+                Id, possibly different than the display name
+            </summary>
+        </member>
+        <member name="P:Zeroconf.ZeroconfHost.IPAddress">
+            <summary>
+                IP Address (alias for IPAddresses.First())
+            </summary>
+        </member>
+        <member name="P:Zeroconf.ZeroconfHost.IPAddresses">
+            <summary>
+                IP Addresses
+            </summary>
+        </member>
+        <member name="P:Zeroconf.ZeroconfHost.Services">
+            <summary>
+                Collection of services provided by the host
+            </summary>
+        </member>
+        <member name="P:Zeroconf.ZeroconfHost.DisplayName">
+            <summary>
+                Display Name
+            </summary>
+        </member>
+        <member name="M:Zeroconf.ZeroconfHost.ToString">
+            <summary>
+                Diagnostic
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Zeroconf.ZeroconfResolver">
+            <summary>
+                Looks for ZeroConf devices
+            </summary>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.ResolveAsync(System.String,System.TimeSpan,System.Int32,System.Int32,System.Action{Zeroconf.IZeroconfHost},System.Threading.CancellationToken,System.Net.NetworkInformation.NetworkInterface[])">
+            <summary>
+                Resolves available ZeroConf services
+            </summary>
+            <param name="scanTime">Default is 2 seconds</param>
+            <param name="cancellationToken"></param>
+            <param name="protocol"></param>
+            <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
+            <param name="retryDelayMilliseconds">The delay time between retries</param>
+            <param name="callback">Called per record returned as they come in.</param>
+            <param name="netInterfacesToSendRequestOn">The network interfaces/adapters to use. Use all if null</param>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.ResolveAsync(System.Collections.Generic.IEnumerable{System.String},System.TimeSpan,System.Int32,System.Int32,System.Action{Zeroconf.IZeroconfHost},System.Threading.CancellationToken,System.Net.NetworkInformation.NetworkInterface[])">
+            <summary>
+                Resolves available ZeroConf services
+            </summary>
+            <param name="scanTime">Default is 2 seconds</param>
+            <param name="cancellationToken"></param>
+            <param name="protocols"></param>
+            <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
+            <param name="retryDelayMilliseconds">The delay time between retries</param>
+            <param name="callback">Called per record returned as they come in.</param>
+            <param name="netInterfacesToSendRequestOn">The network interfaces/adapters to use. Use all if null</param>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.ResolveAsync(Zeroconf.ResolveOptions,System.Action{Zeroconf.IZeroconfHost},System.Threading.CancellationToken,System.Net.NetworkInformation.NetworkInterface[])">
+            <summary>
+                Resolves available ZeroConf services
+            </summary>
+            <param name="options"></param>
+            <param name="callback">Called per record returned as they come in.</param>
+            <param name="netInterfacesToSendRequestOn">The network interfaces/adapters to use. Use all if null</param>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.BrowseDomainsAsync(System.TimeSpan,System.Int32,System.Int32,System.Action{System.String,System.String},System.Threading.CancellationToken,System.Net.NetworkInformation.NetworkInterface[])">
+            <summary>
+                Returns all available domains with services on them
+            </summary>
+            <param name="scanTime">Default is 2 seconds</param>
+            <param name="cancellationToken"></param>
+            <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
+            <param name="retryDelayMilliseconds">The delay time between retries</param>
+            <param name="callback">Called per record returned as they come in.</param>
+            <param name="netInterfacesToSendRequestOn">The network interfaces/adapters to use. Use all if null</param>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.BrowseDomainsAsync(Zeroconf.BrowseDomainsOptions,System.Action{System.String,System.String},System.Threading.CancellationToken,System.Net.NetworkInformation.NetworkInterface[])">
+            <summary>
+                Returns all available domains with services on them
+            </summary>
+            <param name="options"></param>
+            <param name="callback">Called per record returned as they come in.</param>
+            <param name="cancellationToken"></param>
+            <param name="netInterfacesToSendRequestOn">The network interfaces/adapters to use. Use all if null</param>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.ListenForAnnouncementsAsync(System.Action{Zeroconf.ServiceAnnouncement},System.Threading.CancellationToken)">
+            <summary>
+            Listens for mDNS Service Announcements
+            </summary>
+            <param name="callback"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Zeroconf.ZeroconfResolver.UseBSDSocketsZeroconfOniOS">
+            <summary>
+            Forces Xamarin.iOS running on iOS 14.5 or greater to use original Zeroconf BSD Sockets API
+            
+            This would be set to true only when the app possesses the com.apple.developer.networking.multicast entitlement.
+            Default value is false (which means use the NSNetServiceBrowser workaround when running on iOS 14.5 or greater)
+            Has no effect on platforms other than Xamarin.iOS
+            </summary>
+        </member>
+        <member name="P:Zeroconf.ZeroconfResolver.IsiOSWorkaroundEnabled">
+            <summary>
+            Returns true when iOS version of app is running on iOS 14.5+ and workaround has not been
+            suppressed with UseBSDSocketsZeroconfOniOS property. Returns false in all other cases
+            </summary>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.GetiOSInfoPlistServices(System.String)">
+            <summary>
+            Xamarin.iOS only: returns the list of NSBonjourServices from Info.plist
+            </summary>
+            <param name="domain">Optional domain (example: "local.") to append to each service; null = no domain appended; non-null must terminate with "."</param>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.GetiOSDomains(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Xamarin.iOS only: returns the list of NSBonjourServices from Info.plist
+            </summary>
+            <param name="scanTime">How long NSNetServiceBrowser will scan for mDNS domains (default is 2 seconds)</param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.Resolve(System.String,System.TimeSpan,System.Int32,System.Int32)">
+            <summary>
+                Resolves available ZeroConf services
+            </summary>
+            <param name="scanTime">Default is 2 seconds</param>
+            <param name="protocol"></param>
+            <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
+            <param name="retryDelayMilliseconds">The delay time between retries</param>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.Resolve(System.Collections.Generic.IEnumerable{System.String},System.TimeSpan,System.Int32,System.Int32)">
+            <summary>
+                Resolves available ZeroConf services
+            </summary>
+            <param name="scanTime">Default is 2 seconds</param>
+            <param name="protocols"></param>
+            <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
+            <param name="retryDelayMilliseconds">The delay time between retries</param>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.Resolve(Zeroconf.ResolveOptions)">
+            <summary>
+                Resolves available ZeroConf services
+            </summary>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.ListenForAnnouncementsAsync">
+            <summary>
+            Listens for mDNS Service Announcements
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.ResolveContinuous(System.Collections.Generic.IEnumerable{System.String},System.TimeSpan,System.Int32,System.Int32)">
+            <summary>
+                Resolves available ZeroConf services continuously until disposed
+            </summary>
+            <param name="scanTime">Default is 2 seconds</param>
+            <param name="protocols"></param>
+            <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
+            <param name="retryDelayMilliseconds">The delay time between retries</param>
+            <returns></returns>
+        </member>
+        <member name="M:Zeroconf.ZeroconfResolver.ResolveContinuous(System.String,System.TimeSpan,System.Int32,System.Int32)">
+            <summary>
+                Resolves available ZeroConf services continuously until disposed
+            </summary>
+            <param name="scanTime">Default is 2 seconds</param>
+            <param name="protocol"></param>
+            <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
+            <param name="retryDelayMilliseconds">The delay time between retries</param>
+        </member>
+        <member name="F:Heijden.DNS.Header.ID">
+            <summary>
+            An identifier assigned by the program
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Header.QDCOUNT">
+            <summary>
+            the number of entries in the question section
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Header.ANCOUNT">
+            <summary>
+            the number of resource records in the answer section
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Header.NSCOUNT">
+            <summary>
+            the number of name server resource records in the authority records section
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Header.ARCOUNT">
+            <summary>
+            the number of resource records in the additional records section
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Header.Data">
+            <summary>
+            Represents the header as a byte array
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Header.QR">
+            <summary>
+            query (false), or a response (true)
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Header.OPCODE">
+            <summary>
+            Specifies kind of query
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Header.AA">
+            <summary>
+            Authoritative Answer
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Header.TC">
+            <summary>
+            TrunCation
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Header.RD">
+            <summary>
+            Recursion Desired
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Header.RA">
+            <summary>
+            Recursion Available
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Header.Z">
+            <summary>
+            Reserved for future use
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Header.RCODE">
+            <summary>
+            Response code
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Record.RR">
+            <summary>
+            The Resource Record this RDATA record belongs to
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Response.Questions">
+            <summary>
+            List of Question records
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Response.Answers">
+            <summary>
+            List of AnswerRR records
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Response.Authorities">
+            <summary>
+            List of AuthorityRR records
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Response.Additionals">
+            <summary>
+            List of AdditionalRR records
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Response.Error">
+            <summary>
+            Error message, empty when no error
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Response.MessageSize">
+            <summary>
+            The Size of the message
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.Response.TimeStamp">
+            <summary>
+            TimeStamp when cached
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Response.RecordsTXT">
+            <summary>
+            List of RecordTXT in Response.Answers
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Response.RecordsA">
+            <summary>
+            List of RecordA in Response.Answers
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Response.RecordsPTR">
+            <summary>
+            List of RecordPTR in Response.Answers
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.Response.RecordsAAAA">
+            <summary>
+            List of RecordAAAA in Response.Answers
+            </summary>
+        </member>
+        <member name="T:Heijden.DNS.RR">
+            <summary>
+            Resource Record (rfc1034 3.6.)
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.RR.NAME">
+            <summary>
+            The name of the node to which this resource record pertains
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.RR.Type">
+            <summary>
+            Specifies type of resource record
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.RR.Class">
+            <summary>
+            Specifies type class of resource record, mostly IN but can be CS, CH or HS 
+            </summary>
+        </member>
+        <member name="P:Heijden.DNS.RR.TTL">
+            <summary>
+            Time to live, the time interval that the resource record may be cached
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.RR.RDLENGTH">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Heijden.DNS.RR.RECORD">
+            <summary>
+            One of the Record* classes
+            </summary>
+        </member>
+    </members>
+</doc>

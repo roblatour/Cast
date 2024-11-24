@@ -1,13 +1,14 @@
 ﻿Imports System.IO
 Imports System.Net
+Imports Microsoft.Win32
 Imports NAudio.Wave
 
 Module modCommon
 
     Friend gIPAddressOfClient As String = String.Empty
 
-    Friend gHostComputerName As String = My.Computer.Name
-    Friend gHostComputerIPAddress As IPAddress = GetIPHostAddress()
+    Friend gHostComputerName As String = String.Empty
+    Friend gHostComputerIPAddress As IPAddress
     Friend gPlayThroughPCSpeakers As Boolean = False
     Friend gNoDefaultSpeaker As Boolean = False 'v1.6
 
