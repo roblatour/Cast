@@ -10,11 +10,9 @@ To download a copy of the program, please click [here](https://6ec1f0a2f74d4d0c2
 
 Cast is licensed under the [MIT license](https://github.com/roblatour/Cast/blob/main/LICENSE).
 
-The source for Cast can be found [here](https://github.com/roblatour/cast). 
-
 **Setup:**
 
-Simply download and install Cast from the link above. 
+Simply download and install Cast from the link above.
 
 Once the program is installed it will be available in your Windows program folders, usually C:\\Program Files\\Cast
 
@@ -32,7 +30,7 @@ cast -text This is a test
   
 
 
-**Cast Help screen:** 
+**Cast Help screen:**
 
 ![cast screenshot](/images/screenshot.jpg)
 
