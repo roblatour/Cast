@@ -1,5 +1,5 @@
 # Cast 
-(version 2.2, released December 4, 2024)
+(version 2.2, released December 4th, 2024)
 ***
 
 Cast is an open source Windows command line utility which lets you send text (as spoken words), music, or videos to your Google Assistant (Home, Mini, Max, or Nest), a Chromecast enabled device (like your TV), or PC Speakers.
