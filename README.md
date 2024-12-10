@@ -6,7 +6,7 @@ Cast is an open source Windows command line utility which lets you send text (as
 
 You are welcome to download and use it for free on as many computers as you would like.
 
-To download a copy of the program, please click [here](https://6ec1f0a2f74d4d0c2019-591364a760543a57f40bab2c37672676.ssl.cf5.rackcdn.com/CastSetup.exe).
+To download a copy of the program, please click [here](https://github.com/roblatour/cast/releases/download/v4.2.0.0/CastSetup.exe).
 
 Cast is licensed under the [MIT license](https://github.com/roblatour/Cast/blob/main/LICENSE).
 
